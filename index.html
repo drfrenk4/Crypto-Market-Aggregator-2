@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Market Aggregator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        header {
+            background: #333;
+            color: #fff;
+            padding: 1rem 0;
+            text-align: center;
+        }
+        main {
+            margin: 2rem auto;
+            max-width: 800px;
+            padding: 1rem;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            font-size: 1.5rem;
+            text-align: center;
+        }
+        form {
+            margin: 1rem 0;
+            display: flex;
+            flex-direction: column;
+        }
+        label, input, button {
+            margin: 0.5rem 0;
+        }
+        button {
+            padding: 0.5rem;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        th {
+            background-color: #f4f4f4;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Crypto Market Aggregator</h1>
+        <p>Identify cryptocurrencies traded on limited exchanges</p>
+    </header>
+    <main>
+        <h1>Search for Limited Exchange Cryptocurrencies</h1>
+        <form id="search-form">
+            <label for="exchange-count">Maximum Number of Exchanges:</label>
+            <input type="number" id="exchange-count" name="exchange-count" min="1" value="2" required>
+            <button type="submit">Fetch Cryptocurrencies</button>
+        </form>
+        <table id="crypto-table">
+            <thead>
+                <tr>
+                    <th>Cryptocurrency</th>
+                    <th>Symbol</th>
+                    <th>Exchanges</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data will be populated here -->
+            </tbody>
+        </table>
+    </main>
+
+    <script>
+        document.getElementById('search-form').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const exchangeCount = document.getElementById('exchange-count').value;
+
+            try {
+                const response = await fetch(`https://api.coinmarketcap.com/v1/cryptocurrency/listings?exchangeCount=${exchangeCount}`);
+                const data = await response.json();
+
+                const tableBody = document.querySelector('#crypto-table tbody');
+                tableBody.innerHTML = '';
+
+                data.forEach(crypto => {
+                    const row = document.createElement('tr');
+
+                    const nameCell = document.createElement('td');
+                    nameCell.textContent = crypto.name;
+
+                    const symbolCell = document.createElement('td');
+                    symbolCell.textContent = crypto.symbol;
+
+                    const exchangesCell = document.createElement('td');
+                    exchangesCell.textContent = crypto.exchanges.join(', ');
+
+                    row.appendChild(nameCell);
+                    row.appendChild(symbolCell);
+                    row.appendChild(exchangesCell);
+
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error fetching cryptocurrency data:', error);
+            }
+        });
+    </script>
+</body>
+</html>
